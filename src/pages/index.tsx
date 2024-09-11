@@ -1,115 +1,104 @@
-import Image from "next/image";
-import localFont from "next/font/local";
+import { useState } from "react";
+import { useQuery } from "react-query";
+import axios from "axios";
+import type { NextPage } from "next";
+import UserProfile from "@/component/UserProfile";
+import RepoList from "@/component/RepoList";
+import Head from "next/head";
+import Link from "next/link";
+import GitImage from "@/assets/svg/GitImage";
+import Search from "@/assets/svg/Search";
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
 
-export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const fetchUserData = async (username: string) => {
+  const { data } = await axios.get(`https://api.github.com/users/${username}`);
+  return data;
+};
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+const fetchUserRepos = async (username: string) => {
+  const { data } = await axios.get(
+    `https://api.github.com/users/${username}/repos`
   );
-}
+  return data;
+};
+
+const Index: NextPage = () => {
+  const [username, setUsername] = useState("");
+  const [searchUsername, setSearchUsername] = useState("");
+
+  const {
+    data: user,
+    isLoading: isUserLoading,
+    isError: isUserError,
+  } = useQuery(
+    ["user", searchUsername],
+    () => fetchUserData(searchUsername),
+    { enabled: !!searchUsername }
+  );
+
+  const {
+    data: repos,
+    isLoading: areReposLoading,
+    isError: isReposError,
+  } = useQuery(
+    ["repos", searchUsername],
+    () => fetchUserRepos(searchUsername),
+    { enabled: !!searchUsername && !!user }
+  );
+
+  const handleSearch = () => {
+    setSearchUsername(username);
+  };
+
+  return (
+    <div className="flex h-screen w-full  items-center justify-center bg-custom-bg bg-cover bg-center md:items-center">
+      <Head>
+        <title>Github profile finder</title>
+        <meta name="description" content="Login to your Hydrogen Account" />
+      </Head>
+      <div className="relative rounded-md flex h-[screen] w-[600px] flex-col gap-4 bg-white px-6 pt-4">
+        <div className="mb-4 h-auto w-full rounded-lg p-8 shadow-custom-lg">
+          <div className=" flex justi">
+            <div className="z-[1] hidden w-auto pb-1 md:block md:max-w-[544px]">
+              <Link href="/" id="desktop-logo">
+                <p className="cursor-pointer ">
+                  <GitImage />
+                </p>
+              </Link>
+            </div>
+            <h1 className=" relative pl-2 top-3 font-mailSansRoman text-[24px] font-semibold leading-[32px] tracking-[-0.02em] text-black">
+              Enter Users name
+            </h1>
+          </div>
+
+          <div className="flex w-full flex-col items-start justify-start gap-4 font-mailSansRoman">
+            <div className="flex w-full">
+              <input
+                type="text"
+                placeholder="Username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="border outline-none p-2 text-[#252525] rounded-l-lg w-full"
+              />
+              <button
+                onClick={handleSearch}
+                className="bg-[#6c757d] text-white p-2 rounded-r-lg hover:bg-blue-600"
+              >
+                <Search />
+              </button>
+            </div>
+            {isUserLoading && <p>Loading user data...</p>}
+            {isUserError && <p>Error fetching user data.</p>}
+            {user && <UserProfile user={user} />}
+            {areReposLoading && <p>Loading repositories...</p>}
+            {isReposError && <p>Error fetching repositories.</p>}
+            {repos && <RepoList repos={repos} />}
+          </div>
+        </div>
+      </div>
+    </div>
+
+  );
+};
+
+export default Index;
