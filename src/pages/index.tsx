@@ -165,14 +165,14 @@ const Index: NextPage = () => {
                           >
                             VIEW PROFILE
                           </a>
-                          <div>
+                          {/* <div>
                             <p className="font-semibold">
                              Twitter:{" "}
                               <span className="text-blue-700">
                                 {user.twitter_username}
                               </span>
                             </p>
-                          </div>
+                          </div> */}
                         </div>
 
                         <div className="flex shadow-md border mb-4 px-2 bg-slate-100 rounded-md flex-col items-center">
