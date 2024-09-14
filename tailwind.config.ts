@@ -12,6 +12,9 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      boxShadow: {
+        custom: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+      },
     },
     fontFamily: {
       Exo: ["Exo", "sans-serif"],

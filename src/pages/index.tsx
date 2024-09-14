@@ -12,16 +12,12 @@ import { FaSpinner } from "react-icons/fa";
 import { IoClose } from "react-icons/io5"; // Close Icon
 import Image from "next/image";
 
-
 interface Repo {
   id: number;
   name: string;
   html_url: string;
   description?: string;
 }
-
-
-
 
 const fetchUserData = async (username: string) => {
   console.log("Fetching user data for:", username); // Log when the function is called
@@ -62,13 +58,13 @@ const Index: NextPage = () => {
   );
 
   const handleSearch = () => {
-    console.log("Searching for:", username); //
+    console.log("Searching for:", username);
     setSearchUsername(username);
   };
 
   const GitHublink = "https://github.com/";
-  console.log("Checking current user data:", user); // Log current user data
-  console.log("Checking current repositories data:", repos); // Log current repositories data
+  console.log("Checking current user data:", user); 
+  console.log("Checking current repositories data:", repos);
 
   return (
     <div className="flex h-screen w-full items-center justify-center bg-custom-bg bg-cover bg-center md:items-center">
@@ -124,13 +120,13 @@ const Index: NextPage = () => {
               <Dialog.Portal>
                 <Dialog.Overlay
                   className="fixed w-full inset-0 bg-[#252525] bg-opacity-90"
-                  onClick={(e) => e.stopPropagation()} // stops overlay from triggering events inside the modal
+                  onClick={(e) => e.stopPropagation()}
                 />
                 <Dialog.Content className="fixed inset-0 flex items-center justify-center p-6">
                   <div className="relative w-full max-w-lg p-6 bg-white rounded-md shadow-lg top-7">
                     <Dialog.Close asChild>
                       <button
-                        className="absolute top-4 right-4 text-[#000] hover:text-[#f13939] p-2 rounded-full bg-slate-300"
+                        className="absolute top-4 right-4 text-[#fff] hover:text-[#f13939] p-1 rounded-full bg-slate-300"
                         aria-label="Close"
                       >
                         <IoClose size={20} />
@@ -152,19 +148,16 @@ const Index: NextPage = () => {
                           <Image
                             src={user.avatar_url}
                             alt={user.login}
-                            width={150} // Specify a width
-                            height={150} // Specify a height
+                            width={150}
+                            height={150}
                             className="w-48 h-48 rounded-full"
                           />
+                          <div className="flex items-center w-full pt-2 justify-center">
+                            <h2 className="text-lg font-Exo text-[#03071E] font-semibold">
+                              {user.name}
+                            </h2>
+                          </div>
 
-                          <a
-                            href={user.html_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 font-semibold text-sm font-Exo mt-6 flex justify-center items-center"
-                          >
-                            VIEW PROFILE
-                          </a>
                           {/* <div>
                             <p className="font-semibold">
                              Twitter:{" "}
@@ -175,40 +168,66 @@ const Index: NextPage = () => {
                           </div> */}
                         </div>
 
-                        <div className="flex shadow-md border mb-4 px-2 bg-slate-100 rounded-md flex-col items-center">
-                          <h2 className="text-xl font-Exo font-bold">
-                            {user.name}
-                          </h2>
-                          <p className="text-black font-Exo text-sm flex justify-center items-center">
+                        <div className="flex shadow-custom border mb-4 px-2 bg-[#FFF176] rounded-md flex-col pb-2 items-center">
+                          <p className="pt-2 font-Exo text-[#000000] text-sm flex justify-center items-center text-center h-full">
+                            Forte <br />
                             {user.bio}
                           </p>
 
-                          <div className="flex space-x-4 mt-2">
-                            <p className="font-semibold">
+                          <div className=""></div>
+
+                          <div className="flex space-x-12  mt-3 pb-4">
+                            <p className="font-semibold font-Exo text-[#000000] text-sm">
                               Followers:{" "}
-                              <span className="text-blue-700">
+                              <span className=" font-Exo font-light text-[#000000] text-sm">
                                 {user.followers}
                               </span>
                             </p>
-                            <p className="font-semibold">
+                            <p className="font-semibold font-Exo text-[#000000] text-sm">
                               Following:{" "}
-                              <span className="text-green-700">
+                              <span className=" font-Exo font-light text-[#000000] text-sm">
                                 {user.following}
                               </span>
                             </p>
 
-                            <p className="font-semibold ">
+                            <p className="font-semibold font-Exo text-[#000000] text-sm">
                               Repos:{" "}
-                              <span className="text-blue-700 ">
+                              <span className=" font-Exo font-light text-[#000000] text-sm ">
                                 {user.public_repos}
+                              </span>
+                            </p>
+                          </div>
+                          <a
+                            href={user.html_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 font-light text-sm font-Exo  flex justify-center items-center pb-4"
+                          >
+                            VIEW PROFILE
+                          </a>
+                          <div className="flex space-x-20 align-middle ">
+                            <p className="font-medium font-Exo text-[#000000] text-sm">
+                              Location:{" "}
+                              <span className=" font-Exo font-light text-[#000000] text-[13px]">
+                                {user.location}
+                              </span>
+                            </p>
+                            <p className="font-medium font-Exo text-[#000000] text-sm">
+                              Joined:{" "}
+                              <span className="font-Exo font-light text-[#000000] text-[13px]">
+                                {new Date(user.created_at).toLocaleString(
+                                  "default",
+                                  { month: "long" }
+                                )}{" "}
+                                {new Date(user.created_at).getFullYear()}
                               </span>
                             </p>
                           </div>
                         </div>
 
                         {repos && (
-                          <div className=" flex flex-col-reverse w-full h-64  overflow-y-auto">
-                            {repos.slice(0, 1000).map((repo: Repo) => (
+                          <div className="bg-[#f8f9fa] flex flex-col-reverse w-full h-64  overflow-y-auto">
+                            {repos.slice(0, 10000).map((repo: Repo) => (
                               <div
                                 key={repo.id}
                                 className="border p-2 rounded-md mb-2"
@@ -217,9 +236,10 @@ const Index: NextPage = () => {
                                   href={repo.html_url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-blue-500 text-sm"
+                                  className="text-[#03045e] font-medium text-sm"
                                 >
-                                  {repo.name.toLocaleLowerCase()}
+                                  - {" "}{repo.name.charAt(0).toUpperCase() +
+                                    repo.name.slice(1).toLocaleUpperCase()}
                                 </a>
                               </div>
                             ))}
